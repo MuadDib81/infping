@@ -1,23 +1,64 @@
 {
+	"src_host": "Source host",
 	"influx": {
 		"host": "localhost",
-		"port": "8086",
-		"user": "",
-		"pass": "",
+		"port": 8086,
+		"user": "Username",
+		"pass": "Password",
 		"secure": false,
 		"db": "infping"
 	},
-	"infping": {
-		"backoff": "1",
-		"retries": "0",
-		"tos": "0",
-		"summary": "10",
-		"period": "1000",
-		"custom": {}
+	"fping": {
+		"backoff": 0,
+		"retries": 3,
+		"tos": 0,
+		"summary": 10,
+		"period": 1000,
+		"custom": {
+			"-b": 56
+		}
 	},
-	"hosts": {
-		"hosts": [
-			"localhost"
-		]
+	"hostgroups": {
+		"hosts_group01": {
+			"fping": {
+				"backoff": 0,
+				"retries": 3,
+				"tos": 0,
+				"summary": 10,
+				"period": 1000
+			},
+			"hosts": [
+				{
+					"address": "localhost",
+					"description": "My host"
+				},
+				{
+					"address": "8.8.8.8",
+					"description": "Public DNS (Google)",
+					"fping": {
+						"backoff": 0,
+						"retries": 3,
+						"tos": 0,
+						"summary": 10,
+						"period": 1000
+					}
+				}
+			]
+		},
+		"hosts_group02": {
+			"hosts": [
+				{
+					"address": "1.1.1.1",
+					"description": "Public DNS (Cloudflare)",
+					"fping": {
+						"backoff": 0,
+						"retries": 0,
+						"tos": 0,
+						"summary": 10,
+						"period": 1000
+					}
+				}
+			]
+		}
 	}
 }

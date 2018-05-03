@@ -1,0 +1,50 @@
+src_host: "Source host"
+
+influx: 
+  host: localhost
+  port: 8086
+  user: Username
+  pass: Password
+  secure: false
+  db: infping
+
+fping: 
+  backoff: 0 # -B
+  retries: 3 # -r
+  tos: 0 # -O
+  summary: 10 # -Q
+  period: 1000 # -p
+  custom: # custom switches
+    "-b": 56
+
+hostgroups: 
+  hosts_group01: 
+    fping: 
+      backoff: 0 # -B
+      retries: 3 # -r
+      tos: 0 # -O
+      summary: 10 # -Q
+      period: 1000 # -p
+    hosts: 
+    - address: localhost
+      description: "My host"
+    - address: "8.8.8.8"
+      description: "Public DNS (Google)"
+      fping: 
+        backoff: 0 # -B
+        retries: 3 # -r
+        tos: 0 # -O
+        summary: 10 # -Q
+        period: 1000 # -p
+
+  hosts_group02: 
+    hosts: 
+    - address: "1.1.1.1"
+      description: "Public DNS (Cloudflare)"
+      fping: 
+        backoff: 0
+        retries: 0
+        tos: 0
+        summary: 10
+        period: 1000
+        

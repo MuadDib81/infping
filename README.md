@@ -4,6 +4,9 @@
 # Configuration
 This program uses the [Viper configuration package](https://github.com/spf13/viper) and can process configuration files in [JSON](https://json.org/), [YAML](http://yaml.org/), [TOML](https://github.com/toml-lang/toml), and others. Save your configuration file as `infping.<json|yaml|toml|...>` in `/etc/`, `/usr/local/etc`, or the program directory. A sample configuration file is provided in JSON format.
 
+### root
+* **src_host**: source hostname. If not defined, hostname will be used
+
 ### influx
 * **host**: The hostname to connect to
 * **port**: The TCP port number
@@ -13,14 +16,21 @@ This program uses the [Viper configuration package](https://github.com/spf13/vip
 * **secure**: Set to true to enable HTTPS
 
 ### fping
+Default fping arguments. These can be set in a host group (overrides this) and/or on the host itself (overrides this one and the group one)
 * **backoff**: The value for the `-B` argument
 * **retries**: The value for the `-r` argument
 * **tos**: The value for the `-O` argument
 * **summary**: The value for the `-Q` argument – this determines how often data is collected
 * **period**: The value for the `-p` argument
+* **custom**: Custom swirches and arguments
 
-### hosts
-* **hosts**: An array of hostnames to ping
+### hostgroups
+#### group
+Custom name of the group. You can set fping arguments here for the whole group.
+##### hosts
+* **address**: Target host address
+* **description**: Target description
+* **fping**: Fping arguments can be set for one host.
 
 # Influx Storage
 Data is stored in Influx with the following fields and tags:
@@ -29,6 +39,7 @@ Data is stored in Influx with the following fields and tags:
 * **avg**: *field* showing average ping time during the run
 * **loss**: *field* showing packet loss during the run
 * **rx_host**: *tag* showing the target host
+* **rx_description**: *tag* showing the description of the target host (i.e. easier to read hostname)
 * **tx_host**: *tag* showing the originating host of the ping check
 
 # Grafana Dashboard

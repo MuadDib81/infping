@@ -38,14 +38,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-func ReadConfig(conf Config) {
-	viper.SetConfigName(infping)
-	viper.AddConfigPath(".")
-	if err := viper.ReadInConfig(); err != nil {
-		log.Fatal("Unable to read config file", err)
-	}
-}
-
 func main() {
 	viper.SetDefault("influx.host", "localhost")
 	viper.SetDefault("influx.port", "8086")
@@ -60,6 +52,14 @@ func main() {
 	viper.SetDefault("fping.period", "1000")
 	viper.SetDefault("fping.custom", map[string]string{})
 	viper.SetDefault("hosts.hosts", []string{"localhost"})
+
+	viper.SetConfigName("infping")
+	viper.AddConfigPath("/etc/")
+	viper.AddConfigPath("/usr/local/etc/")
+	viper.AddConfigPath(".")
+	if err := viper.ReadInConfig(); err != nil {
+		log.Fatal("Unable to read config file", err)
+	}
 
 	influxScheme := "https"
 	if !viper.GetBool("influx.secure") {

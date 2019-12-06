@@ -33,7 +33,7 @@ import (
 type Config struct {
 	Src_host string `mapstructure:"src_host"`
 	Influx Influx `mapstructure:"influx"`
-	Infping Infping `mapstructure:"infping"`
+	Fping Fping `mapstructure:"fping"`
 	Groups map[string]Group `mapstructure:"hostgroups"`
 }
 
@@ -57,23 +57,79 @@ type Infping struct {
 
 type Group struct {
 	Hosts []Host `mapstructure:"hosts"`
+	Fping Fping `mapstructure:"fping"`
 }
 
 type Host struct {
 	Address string `mapstructure:"address"`
 	Descr string `mapstructure:"description"`
-	Infping Infping `mapstructure:"infping"`
+	Fping Fping `mapstructure:"fping"`
 }
 
-func ReadConfig(conf *Config) {
+func ReadAndParseConfig(conf *Config) {
 	if err := viper.ReadInConfig(); err != nil {
-        log.Fatal("Unable to read config file", err)
-    }
-	
+		log.Fatal("Unable to read config file", err)
+	}
 	if err := viper.Unmarshal(conf); err != nil {
 		panic(err)
 	}
-	
+
+	if ( ! viper.IsSet("src_host")) {
+		src_host, err := os.Hostname()
+		if err != nil {
+			panic(err)
+		}
+	conf.Src_host = src_host
+	}
+
+	if ( (! viper.IsSet("influx.host")) || (! viper.IsSet("influx.port")) || (! viper.IsSet("influx.user")) || (! viper.IsSet("influx.pass")) || (! viper.IsSet("influx.ssl")) || (! viper.IsSet("influx.db")) ) {
+		panic("Missing values for influx!")
+	}
+
+	if ( (! viper.IsSet("fping.backoff")) || (! viper.IsSet("fping.retries")) || (! viper.IsSet("fping.tos")) || (! viper.IsSet("fping.summary")) || (! viper.IsSet("fping.period")) ) {
+		panic("Missing default values for fping!")
+	}
+
+	// setting default fping to group fping and hosts fping values if not set
+	for i := range conf.Groups {
+		x := conf.Groups[i].Fping
+		log.Printf("%v: ", i)
+		log.Printf("Groups Fping (old): %+v", conf.Groups[i].Fping)
+		if ( ! viper.IsSet("hostgroups." + i + ".fping.backoff")) {
+			x.Backoff = conf.Fping.Backoff
+		}
+		if ( ! viper.IsSet("hostgroups." + i + ".fping.retries")) {
+			x.Retries = conf.Fping.Retries
+		}
+		if ( ! viper.IsSet("hostgroups." + i + ".fping.tos")) {
+			x.TOS = conf.Fping.TOS
+		}
+		if ( ! viper.IsSet("hostgroups." + i + ".fping.summary")) {
+			x.Summary = conf.Fping.Summary
+		}
+		if ( ! viper.IsSet("hostgroups." + i + ".fping.period")) {
+			x.Period = conf.Fping.Period
+		}
+		if ( ! viper.IsSet("hostgroups." + i + ".fping.custom")) {
+			x.Custom = conf.Fping.Custom
+		}
+		conf.Groups[i].Fping = x
+		log.Printf("Groups Fping (new): %+v", conf.Groups[i].Fping)
+
+//		if ( ! viper.IsSet("hostgroups." + i + ".fping.backoff")) {
+//			x["Backoff"] = conf.Fping.Backoff
+//			conf.Groups[i].Fping.Backoff = x["Backoff"]
+//			log.Printf("%v", conf.Groups[i].Fping)
+//		}
+		log.Printf("%v", conf.Groups[i].Fping)
+	}
+}
+
+
+
+func Parse(conf *Config) {
+	src_host := conf.src_host
+	log.printf("%v", &src_host)
 }
 
 func main() {

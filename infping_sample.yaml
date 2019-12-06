@@ -5,7 +5,7 @@ influx:
   port: 8086
   user: Username
   pass: Password
-  secure: false
+  ssl: false
   db: infping
 
 fping: 
